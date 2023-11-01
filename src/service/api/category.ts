@@ -1,6 +1,7 @@
 import { axiosClient } from "./axiosClient";
 import {
     CategoryPayload,
+    EditCategoryValuePayload,
     GetCategoriesResponse,
     GetCategoryByIdResponse,
 } from "./type/category";
@@ -23,4 +24,18 @@ const categoryApi = {
         axiosClient.delete<any, BaseResponse<null>>(`/admin/category/${id}`),
 };
 
-export { categoryApi };
+const managerCategoryApi = {
+    getList: () =>
+        axiosClient.get<any, GetCategoriesResponse>("/manager/category"),
+    getById: (id: string) =>
+        axiosClient.get<any, GetCategoryByIdResponse>(
+            `/manager/category/${id}`
+        ),
+    edit: (id: string, payload: EditCategoryValuePayload) =>
+        axiosClient.put<any, BaseResponse<null>>(
+            `manager/category/${id}`,
+            payload
+        ),
+};
+
+export { categoryApi, managerCategoryApi };

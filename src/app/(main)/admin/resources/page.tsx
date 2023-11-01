@@ -89,9 +89,7 @@ function Resources() {
             .then((res) => {
                 setItems(res.data.pages);
             })
-            .catch((err) => {
-                console.log(err);
-            });
+            .catch((err) => {});
     };
 
     const handleSubmit = (data: any) => {
