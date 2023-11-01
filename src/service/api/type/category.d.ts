@@ -17,3 +17,7 @@ export type CategoryPayload = {
     page: string;
     key: Record<string, any>;
 };
+
+export type EditCategoryValuePayload = {
+    value: Record<string, any>[];
+};

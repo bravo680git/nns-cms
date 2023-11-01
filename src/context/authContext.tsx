@@ -15,6 +15,7 @@ type LoginState = {
         name: string;
         avatar: string;
         email: string;
+        role: string;
     };
 };
 
@@ -34,13 +35,16 @@ function AuthProvider({
     const { push } = useRouter();
 
     const [loginState, setLoginState] = useState<LoginState>({
-        isLoggedIn: true,
+        isLoggedIn: false,
     });
 
     useEffect(() => {
-        if (!loginState.isLoggedIn) {
+        const hasToken = !!localStorage.getItem("token");
+        if (!hasToken) {
             push("/login");
         }
+        const userInfo = localStorage.getItem("user-info") ?? "{}";
+        setLoginState({ isLoggedIn: hasToken, userInfo: JSON.parse(userInfo) });
     }, [loginState.isLoggedIn, push]);
 
     return (

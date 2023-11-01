@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Button, Layout, Menu, MenuProps } from "antd";
 import { RxDashboard } from "react-icons/rx";
 import { FiUsers } from "react-icons/fi";
@@ -10,30 +10,38 @@ import { BiLogOut } from "react-icons/bi";
 import { colors, utils } from "@/theme/constants";
 import { usePathname, useRouter } from "next/navigation";
 import { authContext } from "@/context/authContext";
+import { ROLES } from "../constants";
 
-function AdminLayout({ children }: { children: JSX.Element }) {
+function AppLayout({ children }: { children: React.ReactNode }) {
     const { push } = useRouter();
     const path = usePathname();
     const [loginState, setLoginState] = useContext(authContext) ?? [];
     const [isExpand, setIsExpand] = useState(true);
 
+    const rolePath = loginState?.userInfo?.role
+        ? `/${loginState.userInfo.role}`
+        : "";
+
     const sidebarItems: MenuProps["items"] = [
         {
-            key: "/",
+            key: `${rolePath}/`,
             label: "Dashboard",
             icon: <RxDashboard />,
         },
         {
-            key: "/resources",
+            key: `${rolePath}/resources`,
             label: "Resources",
             icon: <MdDomain />,
         },
-        {
-            key: "/users",
+    ];
+
+    if (loginState?.userInfo?.role === ROLES.admin) {
+        sidebarItems.push({
+            key: "/admin/users",
             label: "Users",
             icon: <FiUsers />,
-        },
-    ];
+        });
+    }
 
     const handleNavigate: MenuProps["onClick"] = (e) => {
         push(e.key);
@@ -122,4 +130,4 @@ function AdminLayout({ children }: { children: JSX.Element }) {
     );
 }
 
-export default AdminLayout;
+export default AppLayout;

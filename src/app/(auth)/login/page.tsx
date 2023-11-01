@@ -22,6 +22,7 @@ function Login() {
                 const token = res.data.token;
                 const userInfo = res.data.user;
                 localStorage.setItem("token", token);
+                localStorage.setItem("user-info", JSON.stringify(userInfo));
                 setLoginState?.({
                     isLoggedIn: true,
                     userInfo,

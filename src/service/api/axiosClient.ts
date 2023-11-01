@@ -21,6 +21,9 @@ axiosClient.interceptors.response.use(
     (response) => {
         const data: BaseResponse<any> = response.data;
 
+        if (data.message === "TOKEN_INCORRECT") {
+            location.href = "/login";
+        }
         if (!data.status) {
             return Promise.reject(data);
         }
