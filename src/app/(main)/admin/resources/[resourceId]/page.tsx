@@ -19,6 +19,7 @@ import { BsCheckLg } from "react-icons/bs";
 import { GrFormClose } from "react-icons/gr";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import Loading from "./loading";
 
 type ResourceItem = {
     id: string;
@@ -162,6 +163,10 @@ function ResourceDetail() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    if (!data) {
+        return <Loading />;
+    }
 
     return (
         <div data-component="ResourceDetail">

@@ -1,23 +1,12 @@
 "use client";
 
-import {
-    Button,
-    Col,
-    Input,
-    Popconfirm,
-    Row,
-    Space,
-    Table,
-    Typography,
-    notification,
-} from "antd";
-import { useCallback, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { type ColumnsType } from "antd/es/table";
-import { HiOutlinePencilAlt } from "react-icons/hi";
-import { BsCheckLg } from "react-icons/bs";
-import { GrFormClose } from "react-icons/gr";
 import { managerCategoryApi } from "@/service/api/category";
+import { Button, Space, Table, Typography, notification } from "antd";
+import { type ColumnsType } from "antd/es/table";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { HiOutlinePencilAlt } from "react-icons/hi";
+import Loading from "./loading";
 
 type Item = Awaited<
     ReturnType<typeof managerCategoryApi.getList>
@@ -25,11 +14,8 @@ type Item = Awaited<
 
 function Resource() {
     const { push } = useRouter();
-    const [notificationApi, notificationHolder] =
-        notification.useNotification();
 
     const [data, setData] = useState<Item[]>();
-    const [loading, setLoading] = useState(false);
 
     const columns: ColumnsType<Item> = [
         {
@@ -84,12 +70,15 @@ function Resource() {
         fetchData();
     }, [fetchData]);
 
+    if (!data) {
+        return <Loading />;
+    }
+
     return (
         <div data-component="Resource">
             <Typography.Title level={3}>Manage resources</Typography.Title>
 
             <Table columns={columns} dataSource={data} rowKey="_id" />
-            {notificationHolder}
         </div>
     );
 }

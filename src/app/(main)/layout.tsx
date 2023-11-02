@@ -1,22 +1,39 @@
 "use client";
 
-import React, { useState, useContext } from "react";
-import { Button, Layout, Menu, MenuProps } from "antd";
-import { RxDashboard } from "react-icons/rx";
+import { authContext } from "@/context";
+import { resourceApi } from "@/service/api/resource";
+import { colors, utils } from "@/theme/constants";
+import {
+    Avatar,
+    Button,
+    Card,
+    Layout,
+    Menu,
+    MenuProps,
+    Typography,
+} from "antd";
+import Dropdown from "antd/es/dropdown/dropdown";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useContext, useEffect, useState } from "react";
+import { BiLogOut } from "react-icons/bi";
+import { BsChevronBarLeft } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import { MdDomain } from "react-icons/md";
-import { BsChevronBarLeft } from "react-icons/bs";
-import { BiLogOut } from "react-icons/bi";
-import { colors, utils } from "@/theme/constants";
-import { usePathname, useRouter } from "next/navigation";
-import { authContext } from "@/context/authContext";
+import { RxDashboard } from "react-icons/rx";
 import { ROLES } from "../constants";
+import Link from "next/link";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
     const { push } = useRouter();
     const path = usePathname();
     const [loginState, setLoginState] = useContext(authContext) ?? [];
     const [isExpand, setIsExpand] = useState(true);
+    const [pageInfo, setPageInfo] =
+        useState<
+            Awaited<
+                ReturnType<typeof resourceApi.getByManagerToken>
+            >["data"]["page"]
+        >();
 
     const rolePath = loginState?.userInfo?.role
         ? `/${loginState.userInfo.role}`
@@ -24,7 +41,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
     const sidebarItems: MenuProps["items"] = [
         {
-            key: `${rolePath}/`,
+            key: `${rolePath}`,
             label: "Dashboard",
             icon: <RxDashboard />,
         },
@@ -52,6 +69,17 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         push("/login");
     };
 
+    useEffect(() => {
+        if (loginState?.userInfo?.role === "manager") {
+            resourceApi
+                .getByManagerToken()
+                .then((res) => {
+                    setPageInfo(res.data.page);
+                })
+                .catch();
+        }
+    }, [loginState?.userInfo?.role]);
+
     return (
         <Layout style={{ height: "100vh" }}>
             <Layout.Sider
@@ -75,6 +103,16 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         margin: "16px",
                     }}
                 ></div>
+                {pageInfo && isExpand && (
+                    <div style={{ padding: "0 16px", textAlign: "center" }}>
+                        <Typography.Title level={3}>
+                            {pageInfo.name}
+                        </Typography.Title>
+                        <Typography.Link href={pageInfo.url}>
+                            {pageInfo.url}
+                        </Typography.Link>
+                    </div>
+                )}
                 <Menu
                     items={sidebarItems}
                     mode="inline"
@@ -105,16 +143,64 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         display: "flex",
                         alignItems: "center",
                         padding: "0 16px",
+                        justifyContent: "flex-end",
                     }}
                 >
-                    <Button
-                        style={{ marginLeft: "auto" }}
-                        icon={<BiLogOut />}
-                        type="text"
-                        size="large"
-                        danger
-                        onClick={handleLogout}
-                    ></Button>
+                    {pageInfo && !isExpand && (
+                        <Link
+                            href={pageInfo.url}
+                            style={{ marginRight: "auto" }}
+                        >
+                            <Typography.Title
+                                level={3}
+                                style={{
+                                    marginBottom: 0,
+                                    textDecoration: "underline",
+                                    color: colors.primary,
+                                }}
+                            >
+                                {pageInfo.name}
+                            </Typography.Title>
+                        </Link>
+                    )}
+                    <Dropdown
+                        trigger={["click"]}
+                        dropdownRender={() => (
+                            <Card bodyStyle={{ padding: 12 }}>
+                                <Typography.Title
+                                    level={4}
+                                    style={{ marginBottom: 0 }}
+                                >
+                                    {loginState?.userInfo?.name}
+                                </Typography.Title>
+                                <Typography.Text
+                                    style={{ color: colors["second-txt"] }}
+                                >
+                                    {loginState?.userInfo?.email}
+                                </Typography.Text>
+                                <Button
+                                    style={{
+                                        display: "block",
+                                        width: "100%",
+                                        marginTop: 10,
+                                    }}
+                                    icon={<BiLogOut />}
+                                    type="text"
+                                    size="large"
+                                    danger
+                                    onClick={handleLogout}
+                                >
+                                    Log out
+                                </Button>
+                            </Card>
+                        )}
+                    >
+                        <Avatar
+                            src={loginState?.userInfo?.avatar}
+                            alt="user avatar"
+                            style={{ cursor: "pointer" }}
+                        ></Avatar>
+                    </Dropdown>
                 </Layout.Header>
                 <Layout.Content
                     style={{
