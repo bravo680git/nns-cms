@@ -19,7 +19,7 @@ function Login() {
         authApi
             .login(data)
             .then((res) => {
-                const token = res.data.token;
+                const token = res.data.access_token;
                 const userInfo = res.data.user;
                 localStorage.setItem("token", token);
                 localStorage.setItem("user-info", JSON.stringify(userInfo));

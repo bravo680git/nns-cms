@@ -65,7 +65,9 @@ function Resources() {
                                 alignItems: "center",
                                 justifyContent: "center",
                             }}
-                            onClick={() => push(`/resources/${record._id}`)}
+                            onClick={() =>
+                                push(`/admin/resources/${record._id}`)
+                            }
                         ></Button>
                         <Button
                             icon={<GrFormClose />}

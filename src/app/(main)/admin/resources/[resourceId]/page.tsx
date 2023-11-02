@@ -71,7 +71,9 @@ function ResourceDetail() {
                         <Button
                             icon={<HiOutlinePencilAlt />}
                             onClick={() =>
-                                push(`/resources/${resourceId}/${record.id}`)
+                                push(
+                                    `/admin/resources/${resourceId}/${record.id}`
+                                )
                             }
                         ></Button>
                         <Popconfirm
@@ -208,7 +210,9 @@ function ResourceDetail() {
                 <Typography.Title level={5}>Page categories</Typography.Title>
                 <Button
                     type="primary"
-                    onClick={() => push(`/resources/${resourceId}/create`)}
+                    onClick={() =>
+                        push(`/admin/resources/${resourceId}/create`)
+                    }
                 >
                     Create
                 </Button>
