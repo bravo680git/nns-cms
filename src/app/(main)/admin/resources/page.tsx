@@ -17,6 +17,7 @@ import { type ColumnsType } from "antd/es/table";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { GrFormClose } from "react-icons/gr";
 import { resourceApi } from "@/service/api/resource";
+import Loading from "./loading";
 
 type Item = {
     _id: string;
@@ -65,7 +66,9 @@ function Resources() {
                                 alignItems: "center",
                                 justifyContent: "center",
                             }}
-                            onClick={() => push(`/resources/${record._id}`)}
+                            onClick={() =>
+                                push(`/admin/resources/${record._id}`)
+                            }
                         ></Button>
                         <Button
                             icon={<GrFormClose />}
@@ -139,6 +142,10 @@ function Resources() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    if (!items) {
+        return <Loading />;
+    }
 
     return (
         <div data-component="Resources">

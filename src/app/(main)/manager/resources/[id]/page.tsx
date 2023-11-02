@@ -18,6 +18,7 @@ import {
     notification,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
+import Loading from "./loading";
 
 const toCapitalize = (input = "") => {
     return input[0].toUpperCase() + input.slice(1);
@@ -146,6 +147,10 @@ function Category() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    if (!data) {
+        return <Loading />;
+    }
 
     return (
         <div data-component="Category">

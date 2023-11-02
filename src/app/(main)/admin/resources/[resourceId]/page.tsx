@@ -19,6 +19,7 @@ import { BsCheckLg } from "react-icons/bs";
 import { GrFormClose } from "react-icons/gr";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import Loading from "./loading";
 
 type ResourceItem = {
     id: string;
@@ -71,7 +72,9 @@ function ResourceDetail() {
                         <Button
                             icon={<HiOutlinePencilAlt />}
                             onClick={() =>
-                                push(`/resources/${resourceId}/${record.id}`)
+                                push(
+                                    `/admin/resources/${resourceId}/${record.id}`
+                                )
                             }
                         ></Button>
                         <Popconfirm
@@ -161,6 +164,10 @@ function ResourceDetail() {
         fetchData();
     }, [fetchData]);
 
+    if (!data) {
+        return <Loading />;
+    }
+
     return (
         <div data-component="ResourceDetail">
             <Typography.Title level={3}>Resource detail</Typography.Title>
@@ -208,7 +215,9 @@ function ResourceDetail() {
                 <Typography.Title level={5}>Page categories</Typography.Title>
                 <Button
                     type="primary"
-                    onClick={() => push(`/resources/${resourceId}/create`)}
+                    onClick={() =>
+                        push(`/admin/resources/${resourceId}/create`)
+                    }
                 >
                     Create
                 </Button>

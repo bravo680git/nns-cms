@@ -27,6 +27,7 @@ import { BsPlusLg, BsLink45Deg } from "react-icons/bs";
 import { userApi } from "@/service/api/user";
 import { resourceApi } from "@/service/api/resource";
 import { colors } from "@/theme/constants";
+import Loading from "./loading";
 
 type Item = Awaited<ReturnType<typeof userApi.getById>>["data"]["user"];
 
@@ -65,7 +66,7 @@ function Users() {
         initData: undefined as FormData | undefined,
     });
     const [showModal, setShowModal] = useState(false);
-    const [items, setItems] = useState<Item[]>([]);
+    const [items, setItems] = useState<Item[]>();
     const [pageItems, setPageItems] = useState<PageItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [avatar, setAvatar] = useState(avatarUrls[0]);
@@ -250,6 +251,10 @@ function Users() {
             })
             .catch();
     }, []);
+
+    if (!items) {
+        return <Loading />;
+    }
 
     return (
         <div data-component="Users">

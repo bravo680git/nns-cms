@@ -19,6 +19,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { RiDeleteBin4Line } from "react-icons/ri";
 import { VALIDATE_OPTIONS } from "../constants";
+import Loading from "./loading";
 
 type CategoryItem = {
     id: string;
@@ -40,6 +41,7 @@ function ResourceDetail() {
         notification.useNotification();
 
     const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
 
     const isCreateMode = catId === "create";
 
@@ -47,22 +49,29 @@ function ResourceDetail() {
         if (isCreateMode) {
             return;
         }
-        categoryApi.getById(catId as string).then((res) => {
-            const category = res.data.category;
+        setIsFetching(true);
+        categoryApi
+            .getById(catId as string)
+            .then((res) => {
+                const category = res.data.category;
 
-            const data: CategoryItem = {
-                id: category._id,
-                name: category.name,
-                keys: Object.keys(category.key ?? {}).map((key) => ({
-                    name: key,
-                    validates: Object.keys(category.key[key]).map((k) => ({
-                        type: k,
-                        value: category.key[key][k],
+                const data: CategoryItem = {
+                    id: category._id,
+                    name: category.name,
+                    keys: Object.keys(category.key ?? {}).map((key) => ({
+                        name: key,
+                        validates: Object.keys(category.key[key]).map((k) => ({
+                            type: k,
+                            value: category.key[key][k],
+                        })),
                     })),
-                })),
-            };
-            form.setFieldsValue(data);
-        });
+                };
+                form.setFieldsValue(data);
+            })
+            .catch()
+            .finally(() => {
+                setIsFetching(false);
+            });
     }, [catId, form, isCreateMode]);
 
     const handleSubmit = (data: CategoryItem) => {
@@ -106,6 +115,10 @@ function ResourceDetail() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    if (isFetching) {
+        return <Loading />;
+    }
 
     return (
         <div data-component="ResourceDetail">

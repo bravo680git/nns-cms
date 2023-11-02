@@ -15,6 +15,8 @@ const resourceApi = {
         axiosClient.put<any, BaseResponse<null>>(`/admin/page/${id}`, payload),
     delete: (id: string) =>
         axiosClient.delete<any, BaseResponse<null>>(`/admin/page/${id}`),
+    getByManagerToken: () =>
+        axiosClient.get<any, GetResourceByIdResponse>("/manager/page"),
 };
 
 export { resourceApi };

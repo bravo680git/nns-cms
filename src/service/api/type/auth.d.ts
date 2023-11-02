@@ -4,7 +4,8 @@ export type LoginPayload = {
 };
 
 export type LoginResponse = BaseResponse<{
-    token: string;
+    access_token: string;
+    refresh_token: string;
     user: {
         _id: string;
         email: string;

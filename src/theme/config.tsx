@@ -1,4 +1,4 @@
-import { ThemeConfig } from "antd";
+import { ThemeConfig, theme } from "antd";
 import { colors } from "./constants";
 
 const themeConfig: ThemeConfig = {
