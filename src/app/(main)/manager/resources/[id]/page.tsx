@@ -191,6 +191,7 @@ function Category() {
                             <Form.Item
                                 key={key}
                                 label={toCapitalize(key)}
+                                initialValue={null}
                                 name={key}
                                 rules={validateRules}
                             >
