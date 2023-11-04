@@ -1,23 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
-import {
-    Button,
-    Col,
-    Form,
-    Input,
-    Modal,
-    Row,
-    Space,
-    Table,
-    notification,
-} from "antd";
+import { Button, Col, Form, Input, Modal, Row, Space, Table } from "antd";
 import { type ColumnsType } from "antd/es/table";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { IoIosClose } from "react-icons/io";
 import { resourceApi } from "@/service/api/resource";
 import Loading from "./loading";
+import { notificationContext } from "@/context/notificationContext";
 
 type Item = {
     _id: string;
@@ -28,8 +19,7 @@ type Item = {
 function Resources() {
     const { push } = useRouter();
     const [modal, modalHolder] = Modal.useModal();
-    const [notificationApi, notificationHolder] =
-        notification.useNotification();
+    const notificationApi = useContext(notificationContext);
 
     const [showModal, setShowModal] = useState(false);
     const [items, setItems] = useState<Item[]>();
@@ -100,14 +90,14 @@ function Resources() {
         resourceApi
             .create(data)
             .then((res) => {
-                notificationApi.success({
+                notificationApi?.success({
                     message: "Create page successfully",
                 });
                 setShowModal(false);
                 fetchData();
             })
             .catch((err) => {
-                notificationApi.success({
+                notificationApi?.success({
                     message: "Create page fail",
                 });
             })
@@ -126,12 +116,12 @@ function Resources() {
             async onOk() {
                 try {
                     await resourceApi.delete(id);
-                    notificationApi.success({
+                    notificationApi?.success({
                         message: "Delete page successfully",
                     });
                     fetchData();
                 } catch (error) {
-                    notificationApi.error({
+                    notificationApi?.error({
                         message: "Delete page fail",
                     });
                 }
@@ -202,7 +192,6 @@ function Resources() {
                 </Form>
             </Modal>
             {modalHolder}
-            {notificationHolder}
         </div>
     );
 }

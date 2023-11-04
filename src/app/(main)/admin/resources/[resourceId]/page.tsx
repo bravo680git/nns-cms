@@ -1,7 +1,7 @@
 "use client";
 
-import { categoryApi } from "@/service/api/category";
-import { resourceApi } from "@/service/api/resource";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
     Button,
     Col,
@@ -11,14 +11,16 @@ import {
     Space,
     Table,
     Typography,
-    notification,
 } from "antd";
 import { type ColumnsType } from "antd/es/table";
-import { HiOutlinePencilAlt } from "react-icons/hi";
 import { BsCheckLg } from "react-icons/bs";
+import { HiOutlinePencilAlt } from "react-icons/hi";
 import { IoIosClose } from "react-icons/io";
-import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+
+import { notificationContext } from "@/context";
+import { categoryApi } from "@/service/api/category";
+import { resourceApi } from "@/service/api/resource";
+
 import Loading from "./loading";
 
 type ResourceItem = {
@@ -35,8 +37,7 @@ type ResourceItem = {
 function ResourceDetail() {
     const { resourceId } = useParams();
     const { push } = useRouter();
-    const [notificationApi, notificationHolder] =
-        notification.useNotification();
+    const notificationApi = useContext(notificationContext);
 
     const [data, setData] = useState<ResourceItem>();
     const [editable, setEditable] = useState(false);
@@ -115,11 +116,11 @@ function ResourceDetail() {
     const handleEdit = () => {
         if (editable) {
             if (!data?.name) {
-                notificationApi.warning({ message: "Page name is required" });
+                notificationApi?.warning({ message: "Page name is required" });
                 return;
             }
             if (!/^(http:\/\/)|(https:\/\/)/.test(data?.url ?? "")) {
-                notificationApi.warning({
+                notificationApi?.warning({
                     message: "Input page url with correct format",
                 });
                 return;
@@ -128,13 +129,13 @@ function ResourceDetail() {
             resourceApi
                 .edit(resourceId as string, { name: data.name, url: data.url })
                 .then(() => {
-                    notificationApi.success({
+                    notificationApi?.success({
                         message: "Edit resource successfully",
                     });
                     setEditable(false);
                 })
                 .catch(() => {
-                    notificationApi.error({
+                    notificationApi?.error({
                         message: "Edit resource fail",
                     });
                 })
@@ -149,12 +150,12 @@ function ResourceDetail() {
     const handleDeleteCategory = async (id: string) => {
         try {
             await categoryApi.delete(id);
-            notificationApi.success({
+            notificationApi?.success({
                 message: "Delete category successfully",
             });
             fetchData();
         } catch (error) {
-            notificationApi.error({
+            notificationApi?.error({
                 message: "Delete category fail",
             });
         }
@@ -229,7 +230,6 @@ function ResourceDetail() {
                 scroll={{ x: "800px" }}
                 sticky={{ offsetHeader: -16 }}
             />
-            {notificationHolder}
         </div>
     );
 }

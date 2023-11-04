@@ -1,7 +1,17 @@
 "use client";
 
-import { use, useState } from "react";
-import { Button, Col, Form, Input, Layout, Row, Typography } from "antd";
+import { use, useContext, useState } from "react";
+import {
+    Alert,
+    Button,
+    Col,
+    Form,
+    Input,
+    Layout,
+    Row,
+    Typography,
+    theme,
+} from "antd";
 import Image from "next/image";
 import { authContext } from "@/context/authContext";
 import LoginImg from "./assets/images/image.png";
@@ -9,12 +19,20 @@ import { authApi } from "@/service/api/auth";
 import { useRouter } from "next/navigation";
 import Card from "antd/es/card/Card";
 import { colors } from "@/theme/constants";
+import { notificationContext } from "@/context";
+
+const errorDist = {
+    USERNAME_PASSWORD_INCORRECT: "Username or password is incorrect",
+};
 
 function Login() {
     const [loginState, setLoginState] = use(authContext) ?? [];
     const { push } = useRouter();
+    const { token } = theme.useToken();
+    const notificationApi = useContext(notificationContext);
 
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleLogin = (data: any) => {
         setLoading(true);
@@ -29,9 +47,14 @@ function Login() {
                     isLoggedIn: true,
                     userInfo,
                 });
+                notificationApi?.success({
+                    message: "Welcome, " + userInfo.name,
+                });
                 push("/");
             })
-            .catch()
+            .catch((err) => {
+                setError(errorDist[err.message as keyof typeof errorDist]);
+            })
             .finally(() => {
                 setLoading(false);
             });
@@ -90,6 +113,18 @@ function Login() {
                             style={{ maxWidth: 500, margin: "0 auto" }}
                             onFinish={handleLogin}
                         >
+                            {error && (
+                                <Alert
+                                    message={error}
+                                    type="error"
+                                    showIcon
+                                    style={{
+                                        backgroundColor: "transparent",
+                                        color: token.colorError,
+                                        borderColor: token.colorError,
+                                    }}
+                                ></Alert>
+                            )}
                             <Form.Item
                                 label="Email"
                                 name="email"

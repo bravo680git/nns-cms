@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import {
     Avatar,
     Button,
@@ -17,17 +17,18 @@ import {
     Table,
     Tooltip,
     Typography,
-    notification,
 } from "antd";
 import { type ColumnsType } from "antd/es/table";
 import { IoIosClose } from "react-icons/io";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BsPlusLg, BsLink45Deg } from "react-icons/bs";
+
 import { userApi } from "@/service/api/user";
 import { resourceApi } from "@/service/api/resource";
 import { colors } from "@/theme/constants";
 import Loading from "./loading";
+import { notificationContext } from "@/context";
 
 type Item = Awaited<ReturnType<typeof userApi.getById>>["data"]["user"];
 
@@ -57,8 +58,7 @@ const avatarUrls = [
 ];
 
 function Users() {
-    const [notificationApi, notificationHolder] =
-        notification.useNotification();
+    const notificationApi = useContext(notificationContext);
     const [form] = Form.useForm();
 
     const formConfig = useRef({
@@ -70,7 +70,6 @@ function Users() {
     const [pageItems, setPageItems] = useState<PageItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [avatar, setAvatar] = useState(avatarUrls[0]);
-    const [showAvatarUrlInput, setShowAvatarUrlInput] = useState(false);
     const [avatarUrlInput, setAvatarUrlInput] = useState("");
 
     const columns: ColumnsType<Item> = [
@@ -183,12 +182,12 @@ function Users() {
             .then((res) => {
                 setShowModal(false);
                 fetchData();
-                notificationApi.success({
+                notificationApi?.success({
                     message: label + " user successfully",
                 });
             })
             .catch((err) => {
-                notificationApi.error({ message: label + " user fail" });
+                notificationApi?.error({ message: label + " user fail" });
             })
             .finally(() => {
                 setLoading(false);
@@ -232,10 +231,10 @@ function Users() {
     const handleDelete = async (id: string) => {
         try {
             await userApi.delete(id);
-            notificationApi.success({ message: "Delete user successfully" });
+            notificationApi?.success({ message: "Delete user successfully" });
             fetchData();
         } catch (error) {
-            notificationApi.error({ message: "Delete user fail" });
+            notificationApi?.error({ message: "Delete user fail" });
         }
     };
 
@@ -385,11 +384,6 @@ function Users() {
                                                                 "1 / span 2",
                                                             width: "100%",
                                                         }}
-                                                        onClick={() =>
-                                                            setShowAvatarUrlInput(
-                                                                true
-                                                            )
-                                                        }
                                                     ></Button>
                                                 </Dropdown>
                                             </div>
@@ -454,7 +448,6 @@ function Users() {
                     </Form.Item>
                 </Form>
             </Modal>
-            {notificationHolder}
         </div>
     );
 }

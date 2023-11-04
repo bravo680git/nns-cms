@@ -69,8 +69,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     };
 
     const handleLogout = () => {
+        localStorage.clear();
         setLoginState && setLoginState({ isLoggedIn: false });
-        push("/login");
     };
 
     const handleBreakpoint = (_isBreak: boolean) => {

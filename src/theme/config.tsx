@@ -20,6 +20,8 @@ const themeConfig: ThemeConfig = {
         colorBorderSecondary: colors.border,
         colorIcon: colors.txt,
         colorTextPlaceholder: colors["second-txt"],
+        colorFillContent: colors.border,
+        colorSuccess: colors.success,
     },
     components: {
         Button: {
@@ -30,6 +32,9 @@ const themeConfig: ThemeConfig = {
         },
         Table: {
             borderColor: colors.border,
+        },
+        Skeleton: {
+            colorBgBase: colors.border,
         },
     },
 };

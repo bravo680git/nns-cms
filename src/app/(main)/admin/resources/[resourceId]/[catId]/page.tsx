@@ -1,6 +1,9 @@
 "use client";
 
-import { categoryApi } from "@/service/api/category";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { AiOutlinePlus } from "react-icons/ai";
+import { RiDeleteBin4Line } from "react-icons/ri";
 import {
     Button,
     Card,
@@ -12,12 +15,10 @@ import {
     Select,
     Space,
     Typography,
-    notification,
 } from "antd";
-import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
-import { RiDeleteBin4Line } from "react-icons/ri";
+
+import { notificationContext } from "@/context";
+import { categoryApi } from "@/service/api/category";
 import { VALIDATE_OPTIONS } from "../constants";
 import Loading from "./loading";
 
@@ -37,8 +38,7 @@ function ResourceDetail() {
     const { resourceId, catId } = useParams();
     const { back } = useRouter();
     const [form] = Form.useForm();
-    const [notificationApi, notificationHolder] =
-        notification.useNotification();
+    const notificationApi = useContext(notificationContext);
 
     const [loading, setLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
@@ -100,10 +100,13 @@ function ResourceDetail() {
         setLoading(true);
         api()
             .then(() => {
+                notificationApi?.success({
+                    message: msg + " category successfully",
+                });
                 back();
             })
             .catch(() => {
-                notificationApi.error({
+                notificationApi?.error({
                     message: msg + " category fail",
                 });
             })
@@ -293,7 +296,6 @@ function ResourceDetail() {
                     </Form.Item>
                 </Row>
             </Form>
-            {notificationHolder}
         </div>
     );
 }

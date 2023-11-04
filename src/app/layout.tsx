@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, App } from "antd";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StyledComponentsRegistry from "../../lib/AntdRegistry";
-import { AuthProvider } from "@/context/authContext";
+import { AuthProvider, NotificationProvider } from "@/context";
 import { themeConfig } from "@/theme/config";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,7 +24,9 @@ export default function RootLayout({
                 <StyledComponentsRegistry>
                     <ConfigProvider theme={themeConfig}>
                         <AuthProvider publicRoutes={["/login"]}>
-                            {children}
+                            <NotificationProvider>
+                                {children}
+                            </NotificationProvider>
                         </AuthProvider>
                     </ConfigProvider>
                 </StyledComponentsRegistry>

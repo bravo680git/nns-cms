@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { useParams } from "next/navigation";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { IoIosClose } from "react-icons/io";
-import { managerCategoryApi } from "@/service/api/category";
 import {
     Button,
     Form,
@@ -15,10 +14,12 @@ import {
     Space,
     Table,
     Typography,
-    notification,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
+
+import { managerCategoryApi } from "@/service/api/category";
 import Loading from "./loading";
+import { notificationContext } from "@/context";
 
 const toCapitalize = (input = "") => {
     return input[0].toUpperCase() + input.slice(1);
@@ -30,8 +31,7 @@ type Category = Awaited<
 
 function Category() {
     const { id } = useParams();
-    const [notificationApi, notificationHolder] =
-        notification.useNotification();
+    const notificationApi = useContext(notificationContext);
 
     const editRowIndex = useRef<number | undefined>(undefined);
     const formInitData = useRef<Record<string, any>>();
@@ -105,13 +105,13 @@ function Category() {
             .edit(id as string, postData)
             .then((res) => {
                 setShowModal(false);
-                notificationApi.success({
+                notificationApi?.success({
                     message: "Delete record successfully",
                 });
                 fetchData();
             })
             .catch((err) => {
-                notificationApi.error({ message: "Delete record fail" });
+                notificationApi?.error({ message: "Delete record fail" });
             })
             .finally(() => setLoading(false));
     };
@@ -133,13 +133,13 @@ function Category() {
             .edit(id as string, postData)
             .then((res) => {
                 setShowModal(false);
-                notificationApi.success({
+                notificationApi?.success({
                     message: label + " record successfully",
                 });
                 fetchData();
             })
             .catch((err) => {
-                notificationApi.error({ message: label + " record fail" });
+                notificationApi?.error({ message: label + " record fail" });
             })
             .finally(() => setLoading(false));
     };
@@ -206,7 +206,6 @@ function Category() {
                     })}
                 </Form>
             </Modal>
-            {notificationHolder}
         </div>
     );
 }
