@@ -20,7 +20,7 @@ import {
     notification,
 } from "antd";
 import { type ColumnsType } from "antd/es/table";
-import { GrFormClose } from "react-icons/gr";
+import { IoIosClose } from "react-icons/io";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { AiOutlineCheck } from "react-icons/ai";
 import { BsPlusLg, BsLink45Deg } from "react-icons/bs";
@@ -80,6 +80,7 @@ function Users() {
             render(value, record, index) {
                 return index + 1;
             },
+            width: 60,
         },
         {
             key: "info",
@@ -147,7 +148,7 @@ function Users() {
                             onConfirm={async () => handleDelete(record._id)}
                         >
                             <Button
-                                icon={<GrFormClose />}
+                                icon={<IoIosClose />}
                                 danger
                                 style={{
                                     display: "flex",
@@ -223,6 +224,7 @@ function Users() {
                 avatar: record.avatar,
             },
         };
+        setAvatar(formConfig.current.initData?.avatar ?? "");
         form.setFieldsValue(formConfig.current.initData);
         setShowModal(true);
     };
@@ -265,7 +267,12 @@ function Users() {
                     </Button>
                 </Col>
             </Row>
-            <Table columns={columns} dataSource={items} rowKey="_id" />
+            <Table
+                columns={columns}
+                dataSource={items}
+                rowKey="_id"
+                scroll={{ x: "800px", y: "calc(100vh - 250px)" }}
+            />
 
             <Modal
                 title="Create new user"
@@ -329,7 +336,7 @@ function Users() {
                                                     ))}
                                                 <Dropdown
                                                     trigger={["click"]}
-                                                    open={showAvatarUrlInput}
+                                                    arrow
                                                     dropdownRender={() => (
                                                         <Card
                                                             bodyStyle={{
@@ -363,9 +370,6 @@ function Users() {
                                                                     onClick={() => {
                                                                         setAvatar(
                                                                             avatarUrlInput
-                                                                        );
-                                                                        setShowAvatarUrlInput(
-                                                                            false
                                                                         );
                                                                     }}
                                                                 ></Button>

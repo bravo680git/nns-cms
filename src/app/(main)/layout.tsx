@@ -10,11 +10,13 @@ import {
     Layout,
     Menu,
     MenuProps,
+    Space,
     Typography,
 } from "antd";
 import Dropdown from "antd/es/dropdown/dropdown";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
+import { AiOutlineMenuUnfold } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
 import { BsChevronBarLeft } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
@@ -28,6 +30,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     const path = usePathname();
     const [loginState, setLoginState] = useContext(authContext) ?? [];
     const [isExpand, setIsExpand] = useState(true);
+    const [isBreak, setIsBreak] = useState(false);
     const [pageInfo, setPageInfo] =
         useState<
             Awaited<
@@ -62,11 +65,17 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
     const handleNavigate: MenuProps["onClick"] = (e) => {
         push(e.key);
+        setIsExpand(false);
     };
 
     const handleLogout = () => {
         setLoginState && setLoginState({ isLoggedIn: false });
         push("/login");
+    };
+
+    const handleBreakpoint = (_isBreak: boolean) => {
+        setIsExpand(!_isBreak);
+        setIsBreak(_isBreak);
     };
 
     useEffect(() => {
@@ -92,7 +101,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 collapsible
                 trigger={null}
                 collapsed={!isExpand}
-                collapsedWidth={80}
+                collapsedWidth={isBreak ? 0 : 80}
+                breakpoint="md"
+                onBreakpoint={handleBreakpoint}
             >
                 <div
                     style={{
@@ -146,23 +157,29 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                         justifyContent: "flex-end",
                     }}
                 >
-                    {pageInfo && !isExpand && (
-                        <Link
-                            href={pageInfo.url}
-                            style={{ marginRight: "auto" }}
-                        >
-                            <Typography.Title
-                                level={3}
-                                style={{
-                                    marginBottom: 0,
-                                    textDecoration: "underline",
-                                    color: colors.primary,
-                                }}
-                            >
-                                {pageInfo.name}
-                            </Typography.Title>
-                        </Link>
-                    )}
+                    <Space size={16} style={{ marginRight: "auto" }}>
+                        {isBreak && !isExpand && (
+                            <Button
+                                icon={<AiOutlineMenuUnfold />}
+                                onClick={() => setIsExpand(!isExpand)}
+                            ></Button>
+                        )}
+                        {pageInfo && !isExpand && (
+                            <Link href={pageInfo.url}>
+                                <Typography.Title
+                                    level={3}
+                                    style={{
+                                        marginBottom: 0,
+                                        textDecoration: "underline",
+                                        color: colors.primary,
+                                    }}
+                                >
+                                    {pageInfo.name}
+                                </Typography.Title>
+                            </Link>
+                        )}
+                    </Space>
+
                     <Dropdown
                         trigger={["click"]}
                         dropdownRender={() => (

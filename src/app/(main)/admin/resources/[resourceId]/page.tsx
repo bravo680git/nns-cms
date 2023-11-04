@@ -16,7 +16,7 @@ import {
 import { type ColumnsType } from "antd/es/table";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { BsCheckLg } from "react-icons/bs";
-import { GrFormClose } from "react-icons/gr";
+import { IoIosClose } from "react-icons/io";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Loading from "./loading";
@@ -82,7 +82,7 @@ function ResourceDetail() {
                             okType="danger"
                             onConfirm={() => handleDeleteCategory(record.id)}
                         >
-                            <Button danger icon={<GrFormClose />}></Button>
+                            <Button danger icon={<IoIosClose />}></Button>
                         </Popconfirm>
                     </Space>
                 );
@@ -208,7 +208,7 @@ function ResourceDetail() {
                 </Col>
             </Row>
             <Row
-                style={{ marginTop: 16 }}
+                style={{ marginTop: 16, marginBottom: 16 }}
                 align="middle"
                 justify="space-between"
             >
@@ -226,6 +226,8 @@ function ResourceDetail() {
                 columns={columns}
                 dataSource={data?.categories}
                 rowKey="id"
+                scroll={{ x: "800px" }}
+                sticky={{ offsetHeader: -16 }}
             />
             {notificationHolder}
         </div>

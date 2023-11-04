@@ -9,3 +9,7 @@ button {
     justify-content: center !important;
     align-items: center !important;
 }
+
+.ant-pagination {
+    margin-bottom: 0 !important;
+}

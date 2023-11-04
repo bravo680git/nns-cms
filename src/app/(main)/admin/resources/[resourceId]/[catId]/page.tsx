@@ -161,6 +161,7 @@ function ResourceDetail() {
                                                     onConfirm={() =>
                                                         remove(name)
                                                     }
+                                                    okType="danger"
                                                 >
                                                     <Button
                                                         icon={

@@ -15,7 +15,7 @@ import {
 } from "antd";
 import { type ColumnsType } from "antd/es/table";
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { GrFormClose } from "react-icons/gr";
+import { IoIosClose } from "react-icons/io";
 import { resourceApi } from "@/service/api/resource";
 import Loading from "./loading";
 
@@ -71,7 +71,7 @@ function Resources() {
                             }
                         ></Button>
                         <Button
-                            icon={<GrFormClose />}
+                            icon={<IoIosClose />}
                             danger
                             style={{
                                 display: "flex",
@@ -156,7 +156,12 @@ function Resources() {
                     </Button>
                 </Col>
             </Row>
-            <Table columns={columns} dataSource={items} rowKey="_id" />
+            <Table
+                columns={columns}
+                dataSource={items}
+                rowKey="_id"
+                scroll={{ x: "800px", y: "calc(100vh - 250px)" }}
+            />
             <Modal
                 title="Create new page"
                 open={showModal}
@@ -170,6 +175,7 @@ function Resources() {
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
                     onFinish={handleSubmit}
+                    autoComplete="off"
                 >
                     <Form.Item<Item>
                         label="Page name"

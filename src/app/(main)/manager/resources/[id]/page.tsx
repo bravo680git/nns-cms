@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { GrFormClose } from "react-icons/gr";
+import { IoIosClose } from "react-icons/io";
 import { managerCategoryApi } from "@/service/api/category";
 import {
     Button,
@@ -67,7 +67,7 @@ function Category() {
                             onConfirm={() => handleDelete(index)}
                             okType="danger"
                         >
-                            <Button danger icon={<GrFormClose />}></Button>
+                            <Button danger icon={<IoIosClose />}></Button>
                         </Popconfirm>
                     </Space>
                 );
@@ -160,7 +160,12 @@ function Category() {
                     Create
                 </Button>
             </Row>
-            <Table columns={columns} dataSource={data?.value} rowKey="index" />
+            <Table
+                columns={columns}
+                dataSource={data?.value}
+                rowKey="index"
+                scroll={{ x: "800px", y: "calc(100vh - 280px)" }}
+            />
             <Modal
                 open={showModal}
                 title={

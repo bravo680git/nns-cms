@@ -78,7 +78,12 @@ function Resource() {
         <div data-component="Resource">
             <Typography.Title level={3}>Manage resources</Typography.Title>
 
-            <Table columns={columns} dataSource={data} rowKey="_id" />
+            <Table
+                columns={columns}
+                dataSource={data}
+                rowKey="_id"
+                scroll={{ x: "800px", y: "calc(100vh - 230px)" }}
+            />
         </div>
     );
 }
