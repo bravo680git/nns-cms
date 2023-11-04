@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ApexChart, { type Props } from "react-apexcharts";
+import { type Props } from "react-apexcharts";
 import { Col, Row, Typography } from "antd";
 import { BiCategoryAlt } from "react-icons/bi";
 import { HiOutlineDocumentText } from "react-icons/hi";
 import { resourceApi } from "@/service/api/resource";
 import Loading from "./loading";
 import { colors } from "@/theme/constants";
+import dynamic from "next/dynamic";
+
+const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 type DashboardData = Awaited<
     ReturnType<typeof resourceApi.getManagerDashboard>
@@ -157,8 +160,9 @@ function Home() {
                     <ApexChart
                         type="polarArea"
                         options={options}
-                        series={series[0]?.data as number[]}
+                        series={(series[0]?.data ?? []) as number[]}
                         height={400}
+                        width={"100%"}
                     />
                 </Col>
                 <Col span={24} lg={14} style={{ overflowX: "scroll" }}>
@@ -168,6 +172,7 @@ function Home() {
                             options={options}
                             series={series}
                             height={400}
+                            width={"100%"}
                         />
                     </div>
                 </Col>
