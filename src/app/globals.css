@@ -4,8 +4,26 @@
     box-sizing: border-box;
 }
 
+html {
+    background-color: #141414;
+}
+
 button {
     display: inline-flex !important;
     justify-content: center !important;
     align-items: center !important;
+}
+
+.ant-pagination {
+    margin-bottom: 0 !important;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background-color: #313131;
 }

@@ -1,23 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
-import {
-    Button,
-    Col,
-    Form,
-    Input,
-    Modal,
-    Row,
-    Space,
-    Table,
-    notification,
-} from "antd";
+import { Button, Col, Form, Input, Modal, Row, Space, Table } from "antd";
 import { type ColumnsType } from "antd/es/table";
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { GrFormClose } from "react-icons/gr";
+import { IoIosClose } from "react-icons/io";
 import { resourceApi } from "@/service/api/resource";
 import Loading from "./loading";
+import { notificationContext } from "@/context/notificationContext";
 
 type Item = {
     _id: string;
@@ -28,8 +19,7 @@ type Item = {
 function Resources() {
     const { push } = useRouter();
     const [modal, modalHolder] = Modal.useModal();
-    const [notificationApi, notificationHolder] =
-        notification.useNotification();
+    const notificationApi = useContext(notificationContext);
 
     const [showModal, setShowModal] = useState(false);
     const [items, setItems] = useState<Item[]>();
@@ -71,7 +61,7 @@ function Resources() {
                             }
                         ></Button>
                         <Button
-                            icon={<GrFormClose />}
+                            icon={<IoIosClose />}
                             danger
                             style={{
                                 display: "flex",
@@ -100,14 +90,14 @@ function Resources() {
         resourceApi
             .create(data)
             .then((res) => {
-                notificationApi.success({
+                notificationApi?.success({
                     message: "Create page successfully",
                 });
                 setShowModal(false);
                 fetchData();
             })
             .catch((err) => {
-                notificationApi.success({
+                notificationApi?.success({
                     message: "Create page fail",
                 });
             })
@@ -126,12 +116,12 @@ function Resources() {
             async onOk() {
                 try {
                     await resourceApi.delete(id);
-                    notificationApi.success({
+                    notificationApi?.success({
                         message: "Delete page successfully",
                     });
                     fetchData();
                 } catch (error) {
-                    notificationApi.error({
+                    notificationApi?.error({
                         message: "Delete page fail",
                     });
                 }
@@ -156,7 +146,12 @@ function Resources() {
                     </Button>
                 </Col>
             </Row>
-            <Table columns={columns} dataSource={items} rowKey="_id" />
+            <Table
+                columns={columns}
+                dataSource={items}
+                rowKey="_id"
+                scroll={{ x: "800px", y: "calc(100vh - 250px)" }}
+            />
             <Modal
                 title="Create new page"
                 open={showModal}
@@ -170,6 +165,7 @@ function Resources() {
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
                     onFinish={handleSubmit}
+                    autoComplete="off"
                 >
                     <Form.Item<Item>
                         label="Page name"
@@ -196,7 +192,6 @@ function Resources() {
                 </Form>
             </Modal>
             {modalHolder}
-            {notificationHolder}
         </div>
     );
 }

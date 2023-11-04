@@ -1,2 +1,2 @@
 export * from "./authContext";
-export * from "./pageInfoContext";
+export * from "./notificationContext";
