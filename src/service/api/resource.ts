@@ -3,6 +3,7 @@ import {
     ResourcePayload,
     GetResourcesResponse,
     GetResourceByIdResponse,
+    GetManagerDashboardResponse,
 } from "./type/resource";
 
 const resourceApi = {
@@ -17,6 +18,8 @@ const resourceApi = {
         axiosClient.delete<any, BaseResponse<null>>(`/admin/page/${id}`),
     getByManagerToken: () =>
         axiosClient.get<any, GetResourceByIdResponse>("/manager/page"),
+    getManagerDashboard: () =>
+        axiosClient.get<any, GetManagerDashboardResponse>("manager/dashboard"),
 };
 
 export { resourceApi };
