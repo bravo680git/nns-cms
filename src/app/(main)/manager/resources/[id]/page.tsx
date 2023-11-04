@@ -13,6 +13,7 @@ import {
     Row,
     Space,
     Table,
+    Tooltip,
     Typography,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -44,6 +45,7 @@ function Category() {
             key: "index",
             title: "No.",
             dataIndex: "index",
+            width: 60,
         },
     ];
     columns.push(
@@ -51,6 +53,30 @@ function Category() {
             key,
             dataIndex: key,
             title: toCapitalize(key),
+            render(value: string) {
+                const regex = /^http/;
+                if (!value) {
+                    return "---";
+                }
+                if (regex.test(value)) {
+                    const returnText = value?.slice(0, 30);
+                    return (
+                        <a href={value} target="_blank">
+                            {returnText?.length > 30
+                                ? returnText + "..."
+                                : returnText}
+                        </a>
+                    );
+                }
+                if (value?.length > 30) {
+                    return (
+                        <Tooltip title={value}>
+                            {value?.slice(0, 30)}...
+                        </Tooltip>
+                    );
+                }
+                return value;
+            },
         })),
         {
             key: "action",
@@ -72,6 +98,7 @@ function Category() {
                     </Space>
                 );
             },
+            width: 100,
         }
     );
 
@@ -164,7 +191,7 @@ function Category() {
                 columns={columns}
                 dataSource={data?.value}
                 rowKey="index"
-                scroll={{ x: "800px", y: "calc(100vh - 280px)" }}
+                scroll={{ x: "1000px", y: "calc(100vh - 280px)" }}
             />
             <Modal
                 open={showModal}

@@ -18,3 +18,9 @@ export type ResourcePayload = {
     name: string;
     url: string;
 };
+
+export type GetManagerDashboardResponse = BaseResponse<{
+    categories: number;
+    total_content: number;
+    contents: Record<string, number>;
+}>;
