@@ -148,7 +148,7 @@ function Category() {
         if (editRowIndex.current !== undefined) {
             values[editRowIndex.current] = formData;
         } else {
-            values.unshift(formData);
+            values.push(formData);
         }
         const postData = { value: values };
 
