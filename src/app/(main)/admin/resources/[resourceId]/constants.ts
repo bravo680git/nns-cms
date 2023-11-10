@@ -16,3 +16,14 @@ export const VALIDATE_OPTIONS = [
         value: "pattern",
     },
 ];
+
+export const FIELD_TYPES = [
+    {
+        value: "image",
+        label: "Image",
+    },
+    {
+        value: "text",
+        label: "Text",
+    },
+];

@@ -1,26 +1,33 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useContext } from "react";
-import { useParams } from "next/navigation";
-import { HiOutlinePencilAlt } from "react-icons/hi";
-import { IoIosClose } from "react-icons/io";
 import {
     Button,
+    Card,
+    Dropdown,
     Form,
+    Image,
     Input,
     Modal,
     Popconfirm,
     Row,
+    Select,
     Space,
     Table,
     Tooltip,
     Typography,
+    Upload,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { useParams } from "next/navigation";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { HiOutlinePencilAlt } from "react-icons/hi";
+import { BsUpload } from "react-icons/bs";
+import { IoIosClose } from "react-icons/io";
 
+import { notificationContext } from "@/context";
 import { managerCategoryApi } from "@/service/api/category";
 import Loading from "./loading";
-import { notificationContext } from "@/context";
+import UploadImage from "@/app/(main)/manager/components/UploadImage";
 
 const toCapitalize = (input = "") => {
     return input[0].toUpperCase() + input.slice(1);
@@ -29,6 +36,15 @@ const toCapitalize = (input = "") => {
 type Category = Awaited<
     ReturnType<typeof managerCategoryApi.getById>
 >["data"]["category"];
+
+const mock = [
+    {
+        name: "Img 1",
+        label: "Img 1",
+        url: "https://img.freepik.com/free-psd/engraved-black-logo-mockup_125540-223.jpg?size=626&ext=jpg&ga=GA1.1.166673674.1698464978&semt=sph",
+        value: "https://img.freepik.com/free-psd/engraved-black-logo-mockup_125540-223.jpg?size=626&ext=jpg&ga=GA1.1.166673674.1698464978&semt=sph",
+    },
+];
 
 function Category() {
     const { id } = useParams();
@@ -152,6 +168,9 @@ function Category() {
         }
         const postData = { value: values };
 
+        console.log(formData, postData);
+        return;
+
         const label =
             editRowIndex.current !== undefined ? "Edit" : "Create new";
 
@@ -213,11 +232,16 @@ function Category() {
                 >
                     {Object.keys(data?.key ?? {}).map((key) => {
                         const validateObj = data?.key[key] ?? {};
-                        const validateRules = Object.keys(validateObj).map(
-                            (v) => ({
-                                [v]: Number(validateObj[v]) || validateObj[v],
-                            })
-                        );
+                        const validateRules: any[] = [];
+                        Object.keys(validateObj ?? {}).forEach((v) => {
+                            if (v !== "type") {
+                                validateRules.push({
+                                    [v]:
+                                        Number(validateObj[v]) ||
+                                        validateObj[v],
+                                });
+                            }
+                        });
 
                         return (
                             <Form.Item
@@ -227,7 +251,44 @@ function Category() {
                                 name={key}
                                 rules={validateRules}
                             >
-                                <Input />
+                                {validateObj.type === "image" ? (
+                                    <div style={{ display: "flex", gap: 8 }}>
+                                        <Select
+                                            options={mock}
+                                            optionRender={(item) => (
+                                                <Space
+                                                    size={8}
+                                                    style={{
+                                                        display: "flex",
+                                                        marginTop: 8,
+                                                    }}
+                                                >
+                                                    <Image
+                                                        src={item.data.url}
+                                                        alt="img"
+                                                        width={24}
+                                                    />
+                                                    <Typography.Text>
+                                                        {item.data.name}
+                                                    </Typography.Text>
+                                                </Space>
+                                            )}
+                                            style={{ flex: 1 }}
+                                        />
+                                        <Dropdown
+                                            trigger={["click"]}
+                                            dropdownRender={() => (
+                                                <UploadImage />
+                                            )}
+                                        >
+                                            <Button
+                                                icon={<BsUpload />}
+                                            ></Button>
+                                        </Dropdown>
+                                    </div>
+                                ) : (
+                                    <Input />
+                                )}
                             </Form.Item>
                         );
                     })}
