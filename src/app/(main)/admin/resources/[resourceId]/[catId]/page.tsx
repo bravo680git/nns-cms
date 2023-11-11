@@ -19,18 +19,20 @@ import {
 
 import { notificationContext } from "@/context";
 import { categoryApi } from "@/service/api/category";
-import { VALIDATE_OPTIONS } from "../constants";
+import { VALIDATE_OPTIONS, FIELD_TYPES } from "../constants";
 import Loading from "./loading";
 
 type CategoryItem = {
     id: string;
     name: string;
+
     keys: {
         name: string;
         validates: {
             type: string;
             value: string;
         }[];
+        type: string;
     }[];
 };
 
@@ -58,13 +60,23 @@ function ResourceDetail() {
                 const data: CategoryItem = {
                     id: category._id,
                     name: category.name,
-                    keys: Object.keys(category.key ?? {}).map((key) => ({
-                        name: key,
-                        validates: Object.keys(category.key[key]).map((k) => ({
-                            type: k,
-                            value: category.key[key][k],
-                        })),
-                    })),
+                    keys: Object.keys(category.key ?? {}).map((key) => {
+                        const validates: CategoryItem["keys"][number]["validates"] =
+                            [];
+                        Object.keys(category.key[key]).forEach((v) => {
+                            if (v !== "type") {
+                                validates.push({
+                                    type: v,
+                                    value: category.key[key][v],
+                                });
+                            }
+                        });
+                        return {
+                            name: key,
+                            validates,
+                            type: category.key?.[key]?.type ?? "text",
+                        };
+                    }),
                 };
                 form.setFieldsValue(data);
             })
@@ -86,6 +98,7 @@ function ResourceDetail() {
                             ..._acc,
                             [_crr.type]:
                                 _crr.type === "required" ? true : _crr.value,
+                            type: crr.type,
                         }),
                         {}
                     ),
@@ -93,6 +106,7 @@ function ResourceDetail() {
                 {}
             ),
         };
+
         const api = isCreateMode
             ? () => categoryApi.create(payload)
             : () => categoryApi.edit(catId as string, payload);
@@ -176,15 +190,36 @@ function ResourceDetail() {
                                             }
                                             style={{ marginTop: 16 }}
                                         >
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name, "name"]}
-                                                label="Key name"
-                                                required
-                                                rules={[{ required: true }]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
+                                            <Row gutter={[16, 16]}>
+                                                <Col span={24} md={12}>
+                                                    <Form.Item
+                                                        {...restField}
+                                                        name={[name, "name"]}
+                                                        label="Key name"
+                                                        required
+                                                        rules={[
+                                                            { required: true },
+                                                        ]}
+                                                    >
+                                                        <Input />
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col span={24} md={12}>
+                                                    <Form.Item
+                                                        {...restField}
+                                                        name={[name, "type"]}
+                                                        label="Type"
+                                                        initialValue="text"
+                                                    >
+                                                        <Select
+                                                            placeholder="Text"
+                                                            options={
+                                                                FIELD_TYPES
+                                                            }
+                                                        />
+                                                    </Form.Item>
+                                                </Col>
+                                            </Row>
 
                                             <Form.List
                                                 name={[name, "validates"]}

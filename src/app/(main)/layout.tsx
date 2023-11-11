@@ -16,7 +16,7 @@ import {
 import Dropdown from "antd/es/dropdown/dropdown";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
-import { AiOutlineMenuUnfold } from "react-icons/ai";
+import { AiOutlineMenuUnfold, AiOutlineCloudUpload } from "react-icons/ai";
 import { BiLogOut } from "react-icons/bi";
 import { BsChevronBarLeft } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
@@ -60,6 +60,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             key: "/admin/users",
             label: "Users",
             icon: <FiUsers />,
+        });
+    } else {
+        sidebarItems.push({
+            key: "/manager/images",
+            label: "Images",
+            icon: <AiOutlineCloudUpload />,
         });
     }
 
