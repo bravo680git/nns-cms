@@ -28,6 +28,7 @@ import { notificationContext } from "@/context";
 import { managerCategoryApi } from "@/service/api/category";
 import Loading from "./loading";
 import UploadImage from "@/app/(main)/manager/components/UploadImage";
+import { imageApi } from "@/service/api/image";
 
 const toCapitalize = (input = "") => {
     return input[0].toUpperCase() + input.slice(1);
@@ -36,25 +37,23 @@ const toCapitalize = (input = "") => {
 type Category = Awaited<
     ReturnType<typeof managerCategoryApi.getById>
 >["data"]["category"];
-
-const mock = [
-    {
-        name: "Img 1",
-        label: "Img 1",
-        url: "https://img.freepik.com/free-psd/engraved-black-logo-mockup_125540-223.jpg?size=626&ext=jpg&ga=GA1.1.166673674.1698464978&semt=sph",
-        value: "https://img.freepik.com/free-psd/engraved-black-logo-mockup_125540-223.jpg?size=626&ext=jpg&ga=GA1.1.166673674.1698464978&semt=sph",
-    },
-];
+type Image = Awaited<
+    ReturnType<typeof imageApi.getList>
+>["data"]["images"][number];
 
 function Category() {
     const { id } = useParams();
     const notificationApi = useContext(notificationContext);
+    const [form] = Form.useForm();
 
     const editRowIndex = useRef<number | undefined>(undefined);
     const formInitData = useRef<Record<string, any>>();
     const [data, setData] = useState<Category>();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [imageList, setImageList] = useState<Image[]>([]);
+    const [uploadLoading, setUploadLoading] = useState(false);
+    const [showUploadModal, setShowUploadModal] = useState(false);
 
     const columns: ColumnsType<any> = [
         {
@@ -168,9 +167,6 @@ function Category() {
         }
         const postData = { value: values };
 
-        console.log(formData, postData);
-        return;
-
         const label =
             editRowIndex.current !== undefined ? "Edit" : "Create new";
 
@@ -190,8 +186,34 @@ function Category() {
             .finally(() => setLoading(false));
     };
 
+    const handleUpload = (fieldName: string, image: File, name?: string) => {
+        setUploadLoading(true);
+        imageApi
+            .upload({ image, name })
+            .then((res) => {
+                setImageList([...imageList, res.data]);
+                form.setFieldValue(fieldName, res.data.url);
+                notificationApi?.success({
+                    message: "Upload image successfully",
+                });
+                setShowUploadModal(false);
+            })
+            .catch(() => {
+                notificationApi?.error({ message: "Upload image fail" });
+            })
+            .finally(() => {
+                setUploadLoading(false);
+            });
+    };
+
     useEffect(() => {
         fetchData();
+        imageApi
+            .getList()
+            .then((res) => {
+                setImageList(res.data.images);
+            })
+            .catch();
     }, [fetchData]);
 
     if (!data) {
@@ -219,12 +241,15 @@ function Category() {
                         ? "Edit content"
                         : "Create new content"
                 }
-                onCancel={() => setShowModal(false)}
-                destroyOnClose
+                onCancel={() => {
+                    setShowModal(false);
+                    form.resetFields();
+                }}
                 okText="Submit"
                 okButtonProps={{ form: "form", htmlType: "submit", loading }}
             >
                 <Form
+                    form={form}
                     layout="vertical"
                     id="form"
                     initialValues={formInitData.current}
@@ -244,17 +269,32 @@ function Category() {
                         });
 
                         return (
-                            <Form.Item
+                            <div
                                 key={key}
-                                label={toCapitalize(key)}
-                                initialValue={null}
-                                name={key}
-                                rules={validateRules}
+                                style={{
+                                    display: "flex",
+                                    gap: 8,
+                                    alignItems: "end",
+                                    marginBottom: 16,
+                                }}
                             >
-                                {validateObj.type === "image" ? (
-                                    <div style={{ display: "flex", gap: 8 }}>
+                                <Form.Item
+                                    label={toCapitalize(key)}
+                                    name={key}
+                                    rules={validateRules}
+                                    style={{
+                                        flex: 1,
+                                        marginBottom: 0,
+                                        maxWidth: 430,
+                                    }}
+                                >
+                                    {validateObj.type === "image" ? (
                                         <Select
-                                            options={mock}
+                                            options={imageList}
+                                            fieldNames={{
+                                                value: "url",
+                                                label: "name",
+                                            }}
                                             optionRender={(item) => (
                                                 <Space
                                                     size={8}
@@ -273,23 +313,46 @@ function Category() {
                                                     </Typography.Text>
                                                 </Space>
                                             )}
-                                            style={{ flex: 1 }}
                                         />
-                                        <Dropdown
-                                            trigger={["click"]}
-                                            dropdownRender={() => (
-                                                <UploadImage />
-                                            )}
-                                        >
+                                    ) : (
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                                {validateObj.type === "image" && (
+                                    <Dropdown
+                                        open={showUploadModal}
+                                        trigger={["click"]}
+                                        dropdownRender={() => (
+                                            <UploadImage
+                                                onOk={(file, name) =>
+                                                    handleUpload(
+                                                        key,
+                                                        file,
+                                                        name
+                                                    )
+                                                }
+                                                onCancel={() =>
+                                                    setShowUploadModal(false)
+                                                }
+                                                loading={uploadLoading}
+                                            />
+                                        )}
+                                        onOpenChange={(open) =>
+                                            setShowUploadModal(open)
+                                        }
+                                        destroyPopupOnHide
+                                    >
+                                        <div>
                                             <Button
                                                 icon={<BsUpload />}
+                                                onClick={() =>
+                                                    setShowUploadModal(true)
+                                                }
                                             ></Button>
-                                        </Dropdown>
-                                    </div>
-                                ) : (
-                                    <Input />
+                                        </div>
+                                    </Dropdown>
                                 )}
-                            </Form.Item>
+                            </div>
                         );
                     })}
                 </Form>

@@ -8,7 +8,7 @@ import {
 
 const imageApi = {
     upload: (payload: UploadImagePayload) => {
-        const imgName = payload.name ?? payload.image.name.replace(/\.\w+/, "");
+        const imgName = payload.name || payload.image.name.replace(/\.\w+/, "");
         const formData = new FormData();
         formData.append("name", imgName);
         formData.append("image", payload.image);

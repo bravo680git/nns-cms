@@ -43,7 +43,7 @@ function UploadImage({ onCancel, onOk, loading }: Props) {
                     key="ok"
                     type="primary"
                     htmlType="submit"
-                    form="form"
+                    form="upload-form"
                     loading={loading}
                 >
                     Upload
@@ -52,8 +52,10 @@ function UploadImage({ onCancel, onOk, loading }: Props) {
         >
             <Form
                 layout="vertical"
-                id="form"
-                onFinish={(data) => onOk(data.image.file, data.name)}
+                id="upload-form"
+                onFinish={(data) =>
+                    onOk(data.image?.pop()?.originFileObj, data.name)
+                }
             >
                 <div
                     style={{
@@ -81,6 +83,8 @@ function UploadImage({ onCancel, onOk, loading }: Props) {
                         rules={[
                             { required: true, message: "Please upload image" },
                         ]}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => e.fileList}
                     >
                         <Upload
                             accept=".png, .jpg, .svg"

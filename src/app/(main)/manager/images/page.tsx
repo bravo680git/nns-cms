@@ -189,6 +189,7 @@ function ImageManager() {
                 columns={columns}
                 dataSource={items}
                 scroll={{ x: 600, y: "calc(100vh - 350px)" }}
+                rowKey="_id"
             />
 
             <Modal
