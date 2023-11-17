@@ -47,13 +47,13 @@ function Category() {
     const [form] = Form.useForm();
 
     const editRowIndex = useRef<number | undefined>(undefined);
-    const formInitData = useRef<Record<string, any>>();
     const [data, setData] = useState<Category>();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [imageList, setImageList] = useState<Image[]>([]);
     const [uploadLoading, setUploadLoading] = useState(false);
-    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [showUploadModals, setShowUploadModals] =
+        useState<Record<string, boolean>>();
 
     const columns: ColumnsType<any> = [
         {
@@ -117,6 +117,13 @@ function Category() {
         }
     );
 
+    const handleShowUploadModal = (id: string, value: boolean) => {
+        setShowUploadModals({
+            ...showUploadModals,
+            [id]: value,
+        });
+    };
+
     const fetchData = useCallback(() => {
         managerCategoryApi
             .getById(id as string)
@@ -135,7 +142,8 @@ function Category() {
 
     const handleShowModal = (editIndex?: number) => {
         editRowIndex.current = editIndex;
-        formInitData.current = data?.value.find((_, i) => i === editIndex);
+        const editData = data?.value.find((_, i) => i === editIndex);
+        form.setFieldsValue(editData);
         setShowModal(true);
     };
 
@@ -196,7 +204,7 @@ function Category() {
                 notificationApi?.success({
                     message: "Upload image successfully",
                 });
-                setShowUploadModal(false);
+                handleShowUploadModal(fieldName, false);
             })
             .catch(() => {
                 notificationApi?.error({ message: "Upload image fail" });
@@ -243,7 +251,6 @@ function Category() {
                 }
                 onCancel={() => {
                     setShowModal(false);
-                    form.resetFields();
                 }}
                 okText="Submit"
                 okButtonProps={{ form: "form", htmlType: "submit", loading }}
@@ -252,7 +259,6 @@ function Category() {
                     form={form}
                     layout="vertical"
                     id="form"
-                    initialValues={formInitData.current}
                     onFinish={handleSubmit}
                 >
                     {Object.keys(data?.key ?? {}).map((key) => {
@@ -320,7 +326,7 @@ function Category() {
                                 </Form.Item>
                                 {validateObj.type === "image" && (
                                     <Dropdown
-                                        open={showUploadModal}
+                                        open={showUploadModals?.[key]}
                                         trigger={["click"]}
                                         dropdownRender={() => (
                                             <UploadImage
@@ -332,13 +338,16 @@ function Category() {
                                                     )
                                                 }
                                                 onCancel={() =>
-                                                    setShowUploadModal(false)
+                                                    handleShowUploadModal(
+                                                        key,
+                                                        false
+                                                    )
                                                 }
                                                 loading={uploadLoading}
                                             />
                                         )}
                                         onOpenChange={(open) =>
-                                            setShowUploadModal(open)
+                                            handleShowUploadModal(key, open)
                                         }
                                         destroyPopupOnHide
                                     >
@@ -346,7 +355,10 @@ function Category() {
                                             <Button
                                                 icon={<BsUpload />}
                                                 onClick={() =>
-                                                    setShowUploadModal(true)
+                                                    handleShowUploadModal(
+                                                        key,
+                                                        true
+                                                    )
                                                 }
                                             ></Button>
                                         </div>
