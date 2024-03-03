@@ -4,10 +4,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { RiDeleteBin4Line } from "react-icons/ri";
+import { VscJson } from "react-icons/vsc";
 import {
     Button,
     Card,
     Col,
+    Dropdown,
     Form,
     FormListFieldData,
     Input,
@@ -45,6 +47,8 @@ function ResourceDetail() {
 
     const [loading, setLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
+    const [showImportJsonModal, setShowImportJsonModal] = useState(false);
+    const [importJson, setImportJson] = useState("");
 
     const isCreateMode = catId === "create";
 
@@ -132,6 +136,30 @@ function ResourceDetail() {
             });
     };
 
+    const handleImportFormData = () => {
+        try {
+            const rawData = importJson.split("\n");
+            const keys: CategoryItem["keys"] = rawData.map((item) => {
+                return {
+                    name: item.split(" ")[0],
+                    type: item.split(" ")[1] ? "image" : "text",
+                    validates: [
+                        {
+                            type: "required",
+                            value: "",
+                        },
+                    ],
+                };
+            });
+            form.setFieldValue("keys", keys);
+            setShowImportJsonModal(false);
+        } catch (error) {
+            notificationApi?.error({
+                message: "Invalid imported json data",
+            });
+        }
+    };
+
     useEffect(() => {
         fetchData();
     }, [fetchData]);
@@ -167,7 +195,65 @@ function ResourceDetail() {
                 <Form.List name="keys" initialValue={[]}>
                     {(fields, { add, remove }) => (
                         <>
-                            <Typography.Title level={4}>Keys</Typography.Title>
+                            <Space size={16} align="center">
+                                <Typography.Title level={4}>
+                                    Keys
+                                </Typography.Title>
+                                <Dropdown
+                                    open={showImportJsonModal}
+                                    trigger={["click"]}
+                                    dropdownRender={() => (
+                                        <Card
+                                            actions={[
+                                                <Button
+                                                    key={1}
+                                                    onClick={() =>
+                                                        setShowImportJsonModal(
+                                                            false
+                                                        )
+                                                    }
+                                                >
+                                                    Cancel
+                                                </Button>,
+                                                <Button
+                                                    key={2}
+                                                    onClick={
+                                                        handleImportFormData
+                                                    }
+                                                >
+                                                    OK
+                                                </Button>,
+                                            ]}
+                                            bodyStyle={{
+                                                padding: 16,
+                                                width: 400,
+                                            }}
+                                        >
+                                            <Input.TextArea
+                                                style={{ resize: "none" }}
+                                                rows={5}
+                                                value={importJson}
+                                                onChange={(e) =>
+                                                    setImportJson(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                placeholder="Paste your form data json with format: 
+                                                    [keyName1] [any char(if type image)] [new line] [keyName2]...
+                                                "
+                                            />
+                                        </Card>
+                                    )}
+                                    onOpenChange={setShowImportJsonModal}
+                                >
+                                    <Button
+                                        icon={<VscJson />}
+                                        onClick={() =>
+                                            setShowImportJsonModal(true)
+                                        }
+                                    ></Button>
+                                </Dropdown>
+                            </Space>
 
                             {fields.map(
                                 ({ key, name, ...restField }, index) => {
